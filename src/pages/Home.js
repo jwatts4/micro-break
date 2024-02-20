@@ -3,7 +3,7 @@ import Timer from "../components/Timer";
 const Home = () => {
     return (
         <div>
-            <h1>Micro Break Timer</h1>
+            <h3>Micro Break Timer</h3>
             <Timer />
         </div>
     );
