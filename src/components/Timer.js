@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useInterval } from "../hooks/useInterval";
 import TimerInput from "./TimerInput";
 
 import { minutesToSeconds, formatTime } from "../utils/helpers";
@@ -18,47 +19,42 @@ const Timer = () => {
     const [nextMicroBreakStart, setNextMicroBreakStart] = useState(null);
     const [nextMicroBreakEnd, setNextMicroBreakEnd] = useState(null);
 
-    useEffect(() => {
-        let intervalID = null;
-
-        if (isActive) {
-            intervalID = setInterval(() => {
+    useInterval(
+        () => {
+            if (isActive) {
                 setSecondsRemaining((currentSeconds) => {
                     if (currentSeconds <= 0) {
-                        clearInterval(intervalID);
                         setIsActive(false);
                         return 0;
                     }
-
-                    // Micro-break logic
                     if (currentSeconds === nextMicroBreakStart) {
                         setIsMicroBreak(true);
                     }
                     if (currentSeconds === nextMicroBreakEnd) {
                         setIsMicroBreak(false);
-                        console.log("Inside micro break end");
-                        scheduleNextMicroBreak(currentSeconds - 1);
+                        scheduleNextMicroBreak();
                     }
-
                     return currentSeconds - 1;
                 });
-            }, 1000);
-        }
+            }
+        },
+        isActive ? 1000 : null
+    );
 
-        return () => clearInterval(intervalID);
-    }, [isActive, secondsRemaining, nextMicroBreakStart, nextMicroBreakEnd]);
+    const scheduleNextMicroBreak = () => {
+        setSecondsRemaining((currentSeconds) => {
+            const nextInterval = Math.round(
+                AVERAGE_INTERVAL + (Math.random() * VARIANCE * 2 - VARIANCE)
+            );
 
-    const scheduleNextMicroBreak = (currentSeconds) => {
-        const nextInterval = Math.round(
-            AVERAGE_INTERVAL + (Math.random() * VARIANCE * 2 - VARIANCE)
-        );
+            const start = currentSeconds - nextInterval;
+            const end = start - MICRO_BREAK_TIME;
 
-        // Calculate the start and end times for the next micro break
-        const start = currentSeconds - nextInterval;
-        const end = start - MICRO_BREAK_TIME;
+            setNextMicroBreakStart(start);
+            setNextMicroBreakEnd(end);
 
-        setNextMicroBreakStart(() => Math.max(start, 0));
-        setNextMicroBreakEnd(() => Math.max(end, 0));
+            return currentSeconds;
+        });
     };
 
     const handleStart = () => {
@@ -87,6 +83,9 @@ const Timer = () => {
 
     return (
         <div>
+            <p>Seconds left: {formatTime(secondsRemaining)}</p>
+            <p>Next break start: {formatTime(nextMicroBreakStart)}</p>
+            <p>Next break end: {formatTime(nextMicroBreakEnd)}</p>
             <TimerInput value={inputTime} onChange={handleTimeChange} />
             <div>Time Remaining: {formatTime(secondsRemaining)}</div>
             {isMicroBreak && <h1>Micro Break Time!</h1>}
