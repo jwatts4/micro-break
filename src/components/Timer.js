@@ -1,14 +1,17 @@
+import "../index.css";
+
 import { useState } from "react";
 import { useInterval } from "../hooks/useInterval";
 import TimerInput from "./TimerInput";
+import TimerDisplay from "./TimerDisplay";
 
 import { minutesToSeconds, formatTime } from "../utils/helpers";
 
 const Timer = () => {
     const START_TIME = 25; // minutes
-    const MICRO_BREAK_TIME = 10;
-    const AVERAGE_INTERVAL = 120;
-    const VARIANCE = 20;
+    const MICRO_BREAK_TIME = 3;
+    const AVERAGE_INTERVAL = 3;
+    const VARIANCE = 1;
 
     const [inputTime, setInputTime] = useState(START_TIME);
     const [secondsRemaining, setSecondsRemaining] = useState(
@@ -82,16 +85,42 @@ const Timer = () => {
     };
 
     return (
-        <div>
-            <p>Seconds left: {formatTime(secondsRemaining)}</p>
-            <p>Next break start: {formatTime(nextMicroBreakStart)}</p>
-            <p>Next break end: {formatTime(nextMicroBreakEnd)}</p>
+        <div className="bg-slate-200 p-6 rounded-lg shadow-md my-8">
+            {isMicroBreak && (
+                <h1 className="text-xl text-green-600 font-bold text-center my-4">
+                    Micro Break Time!
+                </h1>
+            )}
+            <TimerDisplay
+                secondsRemaining={secondsRemaining}
+                nextBreakStart={nextMicroBreakStart}
+                nextBreakEnd={nextMicroBreakEnd}
+            />
             <TimerInput value={inputTime} onChange={handleTimeChange} />
-            <div>Time Remaining: {formatTime(secondsRemaining)}</div>
-            {isMicroBreak && <h1>Micro Break Time!</h1>}
-            <button onClick={handleStart}>Start</button>
-            <button onClick={handleStop}>Stop</button>
-            <button onClick={handleReset}>Reset</button>
+            <div className="text-slate-700 mb-4">
+                Time Remaining: {formatTime(secondsRemaining)}
+            </div>
+
+            <div className="flex justify-center space-x-4">
+                <button
+                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    onClick={handleStart}
+                >
+                    Start
+                </button>
+                <button
+                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    onClick={handleStop}
+                >
+                    Stop
+                </button>
+                <button
+                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    onClick={handleReset}
+                >
+                    Reset
+                </button>
+            </div>
         </div>
     );
 };
