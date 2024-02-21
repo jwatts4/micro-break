@@ -1,9 +1,11 @@
 const Navbar = () => {
     return (
-        <div>
+        <div className="flex justify-center">
             <nav>
-                <div>
-                    <a href="/">Timer</a>
+                <div className="">
+                    <a href="/" className="">
+                        Timer
+                    </a>
                 </div>
             </nav>
         </div>

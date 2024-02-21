@@ -2,23 +2,32 @@ import "../index.css";
 
 import { useState } from "react";
 import { useInterval } from "../hooks/useInterval";
-import TimerInput from "./TimerInput";
-import TimerDisplay from "./TimerDisplay";
+import TimerToggle from "./TimerToggle";
 
 import { minutesToSeconds, formatTime } from "../utils/helpers";
 
-const Timer = () => {
+const Timer = ({ isMicroBreak, setIsMicroBreak }) => {
     const START_TIME = 25; // minutes
-    const MICRO_BREAK_TIME = 3;
-    const AVERAGE_INTERVAL = 3;
-    const VARIANCE = 1;
 
+    const modes = {
+        rapid: {
+            microBreakTime: 10,
+            averageInterval: 10,
+            variance: 1,
+        },
+        sparse: {
+            microBreakTime: 10,
+            averageInterval: 120,
+            variance: 20,
+        },
+    };
+
+    const [timerMode, setTimerMode] = useState("sparse");
     const [inputTime, setInputTime] = useState(START_TIME);
     const [secondsRemaining, setSecondsRemaining] = useState(
         minutesToSeconds(START_TIME)
     );
     const [isActive, setIsActive] = useState(false);
-    const [isMicroBreak, setIsMicroBreak] = useState(false);
     const [nextMicroBreakStart, setNextMicroBreakStart] = useState(null);
     const [nextMicroBreakEnd, setNextMicroBreakEnd] = useState(null);
 
@@ -47,11 +56,13 @@ const Timer = () => {
     const scheduleNextMicroBreak = () => {
         setSecondsRemaining((currentSeconds) => {
             const nextInterval = Math.round(
-                AVERAGE_INTERVAL + (Math.random() * VARIANCE * 2 - VARIANCE)
+                modes[timerMode].averageInterval +
+                    (Math.random() * modes[timerMode].variance * 2 -
+                        modes[timerMode].variance)
             );
 
             const start = currentSeconds - nextInterval;
-            const end = start - MICRO_BREAK_TIME;
+            const end = start - modes[timerMode].microBreakTime;
 
             setNextMicroBreakStart(start);
             setNextMicroBreakEnd(end);
@@ -78,48 +89,66 @@ const Timer = () => {
         setNextMicroBreakEnd(null);
     };
 
-    const handleTimeChange = (event) => {
-        const newTime = event.target.value;
-        setInputTime(newTime);
-        setSecondsRemaining(minutesToSeconds(newTime));
-    };
+    const displayText = isMicroBreak ? "Break" : "Work";
 
     return (
         <div className="bg-slate-200 p-6 rounded-lg shadow-md my-8">
-            {isMicroBreak && (
-                <h1 className="text-xl text-green-600 font-bold text-center my-4">
-                    Micro Break Time!
-                </h1>
-            )}
-            <TimerDisplay
-                secondsRemaining={secondsRemaining}
-                nextBreakStart={nextMicroBreakStart}
-                nextBreakEnd={nextMicroBreakEnd}
-            />
-            <TimerInput value={inputTime} onChange={handleTimeChange} />
+            <h1
+                className={`text-xl text-center my-4 font-bold ${
+                    isMicroBreak ? "text-orange-600" : "text-blue-600"
+                }`}
+            >
+                {displayText}
+            </h1>
+
             <div className="text-slate-700 mb-4">
                 Time Remaining: {formatTime(secondsRemaining)}
             </div>
 
             <div className="flex justify-center space-x-4">
                 <button
-                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
+                               ${
+                                   isMicroBreak
+                                       ? "bg-orange-500 hover:bg-orange-600"
+                                       : "bg-blue-500 hover:bg-blue-600"
+                               } 
+                               transition-colors`}
                     onClick={handleStart}
                 >
                     Start
                 </button>
                 <button
-                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
+                               ${
+                                   isMicroBreak
+                                       ? "bg-orange-500 hover:bg-orange-600"
+                                       : "bg-blue-500 hover:bg-blue-600"
+                               } 
+                               transition-colors`}
                     onClick={handleStop}
                 >
                     Stop
                 </button>
                 <button
-                    className="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-700 transition-colors"
+                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
+                               ${
+                                   isMicroBreak
+                                       ? "bg-orange-500 hover:bg-orange-600"
+                                       : "bg-blue-500 hover:bg-blue-600"
+                               } 
+                               transition-colors`}
                     onClick={handleReset}
                 >
                     Reset
                 </button>
+
+                <TimerToggle
+                    timerMode={timerMode}
+                    setTimerMode={setTimerMode}
+                    modes={modes}
+                    isMicroBreak={isMicroBreak}
+                />
             </div>
         </div>
     );
