@@ -2,18 +2,18 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
     return (
-        <div className="bg-slate-200 shadow-md p-4 rounded-lg">
-            <div className="flex justify-center items-center">
+        <div className="bg-slate-800 shadow-md p-4">
+            <div className="flex justify-center items-center space-x-20">
                 <Link
                     to="/"
-                    className="text-slate-500 hover:text-slate-900 font-semibold px-4 py-2 rounded transition-colors"
+                    className="text-slate-200 hover:text-white text-2xl font-semibold px-4 py-2 rounded transition-colors"
                 >
                     Timer
                 </Link>
 
                 <Link
                     to="/about"
-                    className="text-slate-500 hover:text-slate-900 font-semibold px-4 py-2 rounded transition-colors"
+                    className="text-slate-200 hover:text-white text-2xl font-semibold px-4 py-2 rounded transition-colors"
                 >
                     About
                 </Link>
