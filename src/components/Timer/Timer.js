@@ -1,10 +1,10 @@
-import "../index.css";
-
 import { useState } from "react";
-import { useInterval } from "../hooks/useInterval";
-import TimerToggle from "./TimerToggle";
+import { useInterval } from "../../hooks/useInterval";
+import TimerToggleModeButton from "./TimerToggleModeButton";
+import TimerButton from "./TimerButton";
+import TimerDisplay from "./TimerDisplay";
 
-import { minutesToSeconds, formatTime } from "../utils/helpers";
+import { minutesToSeconds, formatTime } from "../../utils/helpers";
 
 const Timer = ({ isMicroBreak, setIsMicroBreak }) => {
     const START_TIME = 25; // minutes
@@ -89,61 +89,33 @@ const Timer = ({ isMicroBreak, setIsMicroBreak }) => {
         setNextMicroBreakEnd(null);
     };
 
-    const displayText = isMicroBreak ? "Break" : "Work";
-
     return (
-        <div className="bg-slate-200 p-6 rounded-lg shadow-md my-8">
-            <h1
-                className={`text-xl text-center my-4 font-bold ${
-                    isMicroBreak ? "text-orange-600" : "text-blue-600"
-                }`}
-            >
-                {displayText}
-            </h1>
-
-            <div className="text-slate-700 mb-4">
-                Time Remaining: {formatTime(secondsRemaining)}
-            </div>
+        <div className="flex flex-col items-center bg-slate-200 p-6 rounded-lg shadow-md my-8">
+            <TimerDisplay
+                isMicroBreak={isMicroBreak}
+                secondsRemaining={secondsRemaining}
+            />
 
             <div className="flex justify-center space-x-4">
-                <button
-                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
-                               ${
-                                   isMicroBreak
-                                       ? "bg-orange-500 hover:bg-orange-600"
-                                       : "bg-blue-500 hover:bg-blue-600"
-                               } 
-                               transition-colors`}
+                <TimerButton
+                    label="Start"
                     onClick={handleStart}
-                >
-                    Start
-                </button>
-                <button
-                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
-                               ${
-                                   isMicroBreak
-                                       ? "bg-orange-500 hover:bg-orange-600"
-                                       : "bg-blue-500 hover:bg-blue-600"
-                               } 
-                               transition-colors`}
-                    onClick={handleStop}
-                >
-                    Stop
-                </button>
-                <button
-                    className={`px-4 py-2 rounded font-medium text-white focus:outline-none 
-                               ${
-                                   isMicroBreak
-                                       ? "bg-orange-500 hover:bg-orange-600"
-                                       : "bg-blue-500 hover:bg-blue-600"
-                               } 
-                               transition-colors`}
-                    onClick={handleReset}
-                >
-                    Reset
-                </button>
+                    isMicroBreak={isMicroBreak}
+                />
 
-                <TimerToggle
+                <TimerButton
+                    label="Stop"
+                    onClick={handleStop}
+                    isMicroBreak={isMicroBreak}
+                />
+
+                <TimerButton
+                    label="Reset"
+                    onClick={handleReset}
+                    isMicroBreak={isMicroBreak}
+                />
+
+                <TimerToggleModeButton
                     timerMode={timerMode}
                     setTimerMode={setTimerMode}
                     modes={modes}
